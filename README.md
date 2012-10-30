@@ -16,7 +16,7 @@ blocker.listen(6380);
 `open`: 不再阻塞依赖模块向应用发送的响应，并且允许应用重新连接。   
 
 ## Install
-npm install interceptor
+`npm install interceptor`
 
 ## Lincense
 (The MIT License)
