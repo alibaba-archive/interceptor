@@ -1,6 +1,6 @@
 {
   "name": "interceptor",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "an interceptor to mock one-way off network",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,11 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/dead-horse/interceptor.git"
+  },
+  "devDependencies": { 
+    "mocha" : ">= 0.9.0",
+    "should" : ">= 0.4.2",
+    "visionmedia-jscoverage": "*"
   },
   "keywords": [
     "one-way",

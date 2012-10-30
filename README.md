@@ -1,19 +1,61 @@
-interceptor
+interceptor![travis-ci](https://secure.travis-ci.org/dead-horse/interceptor.png) 
 ===========
 
 ## 作用
 模拟应用依赖模块所在机房单向断网的情况。 可能导致应用与依赖模块（如mongo, redis）连接仍然存在，但是所有发送的请求都无法响应。   
 
 ## Usage
+下面是模拟redis服务断网的一个sample:   
+
 ```js
+/**
+ * module dependence
+ */
+var assert = require('assert');
 var interceptor = require('interceptor');
-var blocker = interceptor.create('localhost:6379');
-blocker.listen(6380);
+var redis = require('redis');
+
+//add proxy in redis and client
+var proxy = interceptor.create('localhost:6379');
+proxy.listen(6380);
+//client conenct to proxy to mock off-network
+var client = redis.createClient(6380, 'localhost');
+
+//before off-network
+client.set('foo', 'bar');
+client.get('foo', function(err, data) {
+  assert(data, 'bar');
+  console.log('get foo ok:', data);
+});
+
+//when off-network
+setTimeout(function() {
+  //now block it
+  proxy.block();
+  var timer = setTimeout(function() {
+    console.log('timeout!');
+    client.end();
+  }, 1000);
+  client.get('foo', function(err, data) {
+    clearTimeout(timer);
+  });
+}, 100);
+
+//when reconenct
+setTimeout(function() {
+  proxy.open();
+  client = redis.createClient(6380, 'localhost');
+  client.get('foo', function(err, data) {
+    assert(data, 'bar');
+    console.log('reopen and get foo ok:', data);
+    process.exit(0);
+  });
+}, 2000);
 ```
 
 ## Method
-`block`: 阻塞依赖模块向应用发送的响应，并且在应用与它的连接断开之后不在监听，无法重新连接。
-`open`: 不再阻塞依赖模块向应用发送的响应，并且允许应用重新连接。   
+`block`: 阻塞依赖模块向应用发送的响应，并且在应用与它的连接断开之后不在监听，无法重新连接。    
+`open`: 不再阻塞依赖模块向应用发送的响应，并且允许应用重新连接。  
 
 ## Install
 npm install interceptor
