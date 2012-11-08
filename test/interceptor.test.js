@@ -34,6 +34,32 @@ describe('#interceptor', function() {
       client.write('ping');
     });
 
+    it('should ok connect twice', function(done) {
+      var count = 2;
+      var client2 = net.connect(16788, '127.0.0.1');
+      client2.once('data', function(data) {
+        String(data).should.equal('ping');
+        if (--count === 0){
+          client2.end();
+          setTimeout(function () {
+            done();
+          }, 100);
+        }
+      });
+      client2.write('ping');
+
+      client.once('data', function(data) {
+        String(data).should.equal('ping');
+        if (--count === 0){
+          client2.end();
+          setTimeout(function () {
+            done();
+          }, 100);
+        }
+      });
+      client.write('ping');
+    });
+
     it('should intercept by proxy', function(done) {
       proxy.block();
       var timer = setTimeout(function() {
