@@ -4,6 +4,13 @@ var should = require('should');
 var net = require('net');
 
 describe('#interceptor', function() {
+  it('should throw error by wrong target', function () {
+    try {
+      interceptor.create('127.0.0.1');
+    } catch (err) {
+      err.message.should.equal('target type error, must like 127.0.0.1:6379');
+    }
+  });
   describe('#net', function() {
     var _server;
     var proxy;
@@ -11,8 +18,7 @@ describe('#interceptor', function() {
     before(function() {
       _server = net.createServer(function(s) {
         s.pipe(s);
-        s.on('error', function() {
-          s.write(err.message);
+        s.on('error', function(err) {
         });
       });
       _server.listen(16789);
@@ -65,7 +71,7 @@ describe('#interceptor', function() {
       var timer = setTimeout(function() {
         client.end();
         setTimeout(function() {
-          _server._connections.should.equal(0);
+          _server._connections.should.equal(1);
           done();
         }, 100);
       }, 100);
@@ -85,10 +91,18 @@ describe('#interceptor', function() {
       client.write('ping');
     });
 
+    it('should emit error ok', function (done) {
+      client.on('close', function () {
+        done();
+      });
+      proxy.outArr[2].emit('error', new Error('mock error'));
+      proxy.outArr.length.should.equal(2);
+    });
+
     it('should end ok', function(done) {
       client.end();
       setTimeout(function(){
-        _server._connections.should.equal(0);
+        _server._connections.should.equal(1);
         done();
       },100);
     });
@@ -111,7 +125,7 @@ describe('#interceptor', function() {
       proxy.close();
       _server.close();
     });
-
+    var _res;
     it('should ok at first', function(done) {
       http.get('http://127.0.0.1:16788/test', function(res) {
         res.statusCode.should.equal(200);
@@ -123,17 +137,12 @@ describe('#interceptor', function() {
     });
 
     it('should intercept by proxy', function(done) {
-      proxy.block();
-      var timer = setTimeout(function() {
-        setTimeout(function() {
-          done();
-        }, 100);
-      }, 100);
-      http.get('http://127.0.0.1:16788/test', function(res) {
-        res.on('data', function() {
-          clearTimeout(timer);
-        });
-      });
+       proxy.block();
+       http.get('http://127.0.0.1:16788/test', function(res) {
+       }).on('error', function (err) {
+         err.code.should.equal('ECONNREFUSED');
+         done();
+       });
     });
 
     it('should reopen ok', function(done) {
