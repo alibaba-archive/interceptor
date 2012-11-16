@@ -95,8 +95,8 @@ describe('#interceptor', function() {
       client.on('close', function () {
         done();
       });
-      proxy.outArr[2].emit('error', new Error('mock error'));
-      proxy.outArr.length.should.equal(2);
+      proxy.outArr[1].emit('error', new Error('mock error'));
+      proxy.outArr.length.should.equal(1);
     });
 
     it('should end ok', function(done) {
