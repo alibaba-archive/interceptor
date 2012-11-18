@@ -1,0 +1,52 @@
+#! /usr/bin/env node
+/*!
+ * bin/interceptor 
+ * Copyright(c) 2012 dead_horse <dead_horse@qq.com>
+ * MIT Licensed
+ */
+
+/**
+ * Module dependencies.
+ */
+var readline = require('readline');
+var interceptor = require('../');
+var argv = process.argv;
+var target = argv[2];
+var port = argv[3];
+if (!target || !port || target.split(':').length !== 2) {
+  console.log('must use as `interceptor target port`\nexample: interceptor 127.0.0.1:6379 6380');
+  return ;
+}
+
+var proxy = interceptor.create(target);
+
+proxy.listen(port, function () {
+  var rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  console.log('Now you can input command to control this interceptor proxy:\
+    \nb block:  block the network\no open :  open the network\ne exit :  exit the process');
+
+  rl.on('line', function (cmd) {
+    switch (cmd.trim()) {
+      case 'b':
+      case 'block': 
+        proxy.block();
+        console.log('network is blocked');
+        break;
+      case 'o':
+      case 'open':
+        proxy.open();
+        console.log('network is open');
+        break;
+      case 'e':
+      case 'exit':
+        process.exit(0); break;
+      default: 
+        console.log('only accept `b` & `blcok` for block and `o` & `open` for open');
+      }
+  })
+});
+
