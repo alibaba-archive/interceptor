@@ -16,7 +16,7 @@ describe('#interceptor', function() {
     var proxy;
     var client;
     var client2;
-    before(function() {
+    before(function(done) {
       _server = net.createServer(function(s) {
         s.pipe(s);
         s.on('error', function(err) {
@@ -25,7 +25,10 @@ describe('#interceptor', function() {
       _server.listen(16789);
       proxy = interceptor.create('127.0.0.1:16789');
       proxy.listen(16788);
-      client = net.connect(16788, '127.0.0.1');
+      client = net.connect(16788, '127.0.0.1', function () {
+        proxy.inStream._connections.should.equal(1);
+        done();
+      });
     });
 
     after(function() {
