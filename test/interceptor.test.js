@@ -15,6 +15,7 @@ describe('#interceptor', function() {
     var _server;
     var proxy;
     var client;
+    var client2;
     before(function() {
       _server = net.createServer(function(s) {
         s.pipe(s);
@@ -42,7 +43,7 @@ describe('#interceptor', function() {
 
     it('should ok connect twice', function(done) {
       var count = 2;
-      var client2 = net.connect(16788, '127.0.0.1');
+      client2 = net.connect(16788, '127.0.0.1');
       client2.once('data', function(data) {
         String(data).should.equal('ping');
         if (--count === 0){
@@ -55,30 +56,37 @@ describe('#interceptor', function() {
       client2.write('ping');
 
       client.once('data', function(data) {
-        String(data).should.equal('ping');
+        String(data).should.equal('pong');
         if (--count === 0){
-          client2.end();
           setTimeout(function () {
             done();
           }, 100);
         }
       });
-      client.write('ping');
+      client.write('pong');
     });
 
     it('should intercept by proxy', function(done) {
-      proxy.block();
-      var timer = setTimeout(function() {
-        client.end();
-        setTimeout(function() {
-          _server._connections.should.equal(1);
-          done();
-        }, 100);
-      }, 100);
+      setTimeout(function() {
+        client.removeAllListeners('close');
+        client.removeAllListeners('data');
+        proxy.inStream._connections.should.equal(1);
+        _server._connections.should.equal(1);
+        done();
+      }, 500);
       client.once('data', function(data) {
-        clearTimeout(timer);
+        throw new Error('should not response exist socket');
       });
+      client.once('close', function () {
+        throw new Error('should not emit exist socket\'s close event');
+      });
+      proxy.block();
       client.write('ping');
+    });
+
+    it('should end client ok', function (done) {
+      proxy.inStream.once('close', done);
+      client.end();
     });
 
     it('should reopen ok', function(done) {
