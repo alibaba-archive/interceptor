@@ -53,9 +53,14 @@ setTimeout(function() {
 }, 2000);
 ```
 
-## Method
+### Method
 `block`: 阻塞依赖模块向应用发送的响应，并且在应用与它的连接断开之后不在监听，无法重新连接。    
 `open`: 不再阻塞依赖模块向应用发送的响应，并且允许应用重新连接。  
+`close`: 关闭代理，不再接受请求，之前的连接也直接断开，模拟服务端直接被kill的状态。  
+
+### Events  
+`_connect`: client与Interceptor建立连接的时候，触发`_connect`事件，同时会传递出这个socket。  
+
 
 ## Install
 `npm install interceptor`
