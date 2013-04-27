@@ -13,7 +13,8 @@
   "devDependencies": { 
     "mocha" : ">= 0.9.0",
     "should" : ">= 0.4.2",
-    "jscover": "*"
+    "jscover": "*",
+    "pedding": "*"
   },
   "engines": {
     "node": ">=0.8"

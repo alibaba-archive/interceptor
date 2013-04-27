@@ -1,3 +1,15 @@
+/*!
+ * test/interceptor.test.js 
+ * Copyright(c) 2012 dead_horse <dead_horse@qq.com>
+ * MIT Licensed
+ */
+
+"use strict";
+
+/**
+ * Module dependencies.
+ */
+var pedding = require('pedding');
 var interceptor = require('../');
 var http = require('http');
 var should = require('should');
@@ -25,8 +37,12 @@ describe('#interceptor', function() {
       _server.listen(16789);
       proxy = interceptor.create('127.0.0.1:16789');
       proxy.listen(16788);
-      client = net.connect(16788, '127.0.0.1', function () {
+      done = pedding(2, done);
+      proxy.once('_connect', function () {
         proxy.inStream._connections.should.equal(1);
+        done();
+      });
+      client = net.connect(16788, '127.0.0.1', function () {
         done();
       });
     });
