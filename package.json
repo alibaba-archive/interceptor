@@ -1,6 +1,6 @@
 {
   "name": "interceptor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "an interceptor to mock one-way off network",
   "main": "index.js",
   "scripts": {

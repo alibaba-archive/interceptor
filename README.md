@@ -16,7 +16,9 @@ var interceptor = require('interceptor');
 var redis = require('redis');
 
 //add proxy in redis and client
-var proxy = interceptor.create('localhost:6379');
+//first argument is target, second argument is delay. 
+//If set delay = 100, the proxy will delay all request 100ms to response.
+var proxy = interceptor.create('localhost:6379', 100);
 proxy.listen(6380);
 //client conenct to proxy to mock off-network
 var client = redis.createClient(6380, 'localhost');
