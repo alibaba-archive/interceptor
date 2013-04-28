@@ -35,7 +35,7 @@ describe('#interceptor', function() {
         });
       });
       _server.listen(16789);
-      proxy = interceptor.create('127.0.0.1:16789');
+      proxy = interceptor.create('127.0.0.1:16789', 100);
       proxy.listen(16788);
       done = pedding(2, done);
       proxy.once('_connect', function () {
@@ -66,7 +66,6 @@ describe('#interceptor', function() {
       client2.once('data', function(data) {
         String(data).should.equal('ping');
         if (--count === 0){
-          client2.end();
           setTimeout(function () {
             done();
           }, 100);
@@ -83,6 +82,17 @@ describe('#interceptor', function() {
         }
       });
       client.write('pong');
+    });
+
+    it('should timeout', function (done) {
+      client2.once('data', function () {
+        throw new Error('should not get data when timeout');
+      });
+      setTimeout(function () {
+        client2.end();
+        done();
+      }, 50);
+      client2.write('pong');
     });
 
     it('should intercept by proxy', function(done) {
