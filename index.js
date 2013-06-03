@@ -1,1 +1,1 @@
-module.exports = process.env.INTERCEPTOR_COV ? require('./lib-cov/interceptor') : require('./lib/interceptor');
+module.exports = require('./lib/interceptor');
