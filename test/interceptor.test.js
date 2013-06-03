@@ -52,6 +52,10 @@ describe('#interceptor', function() {
       _server.close();
     });
 
+    it('should return address info', function () {
+      proxy.address().should.eql({ address: '0.0.0.0', family: 'IPv4', port: 16788 });
+    });
+
     it('should ok at first', function(done) {
       client.once('data', function(data) {
         String(data).should.equal('ping');
