@@ -1,4 +1,10 @@
 
+0.1.2 / 2013-06-03 
+==================
+
+  * Merge pull request #4 from fengmk2/address
+  * support address(); use blanket instead of jscover
+
 0.1.1 / 2013-04-28 
 ==================
 
