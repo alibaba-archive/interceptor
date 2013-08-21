@@ -10,15 +10,34 @@
  */
 var readline = require('readline');
 var interceptor = require('../');
-var argv = process.argv;
-var target = argv[2];
-var port = argv[3];
+var optimist = require('optimist');
+var argv = optimist
+    .usage('interceptor -t 127.0.0.1:6379 -p 6380 -d 100')
+    .demand(['t', 'p'])
+    .options({
+      t: {
+        alias: 'target',
+        describe: '代理的目标服务器地址: 127.0.0.1:6379'
+      },
+      p: {
+        alias: 'port',
+        describe: '代理监听的本地端口: 8888'
+      },
+      d: {
+        alias: 'delay',
+        describe: '模拟目标服务器延迟，单位为ms: 100'
+      }
+    })
+    .argv;
+
+var target = argv.t;
+var port = argv.p;
+var delay = parseInt(argv.d, 10) || 0;
 if (!target || !port || target.split(':').length !== 2) {
-  console.log('must use as `interceptor target port`\nexample: interceptor 127.0.0.1:6379 6380');
-  return ;
+  return optimist.showHelp();
 }
 
-var proxy = interceptor.create(target);
+var proxy = interceptor.create(target, delay);
 
 proxy.listen(port, function () {
   var rl = readline.createInterface({

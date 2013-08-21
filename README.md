@@ -16,8 +16,9 @@ var interceptor = require('interceptor');
 var redis = require('redis');
 
 //add proxy in redis and client
-//first argument is target, second argument is delay. 
-//If set delay = 100, the proxy will delay all request 100ms to response.
+
+//第一个参数是需要代理的服务器地址
+//第二个参数是设置需要模拟的延迟，单位为ms。可选。
 var proxy = interceptor.create('localhost:6379', 100);
 proxy.listen(6380);
 //client conenct to proxy to mock off-network
@@ -67,6 +68,35 @@ setTimeout(function() {
 ## Install
 ```bash
 npm install interceptor
+```
+
+## 命令行工具  
+
+作为模块形式的 `interceptor` 方便于进行单元测试，同时模块提供了一个命令行工具进行快速的测试。  
+
+```
+$ interceptor 
+interceptor -t 127.0.0.1:6379 -p 6380 -d 100
+
+Options:
+  -t, --target  代理的目标服务器地址: 127.0.0.1:6379  [required]
+  -p, --port    代理监听的本地端口: 8888             [required]
+  -d, --delay   模拟目标服务器延迟，单位为ms: 100      
+
+```
+
+Example:  
+
+```
+$ interceptor -t 127.0.0.1:6379 -p 6380 -d 1000
+Now you can input command to control this interceptor proxy:    
+b block:  block the network
+o open :  open the network
+e exit :  exit the process
+b
+network is blocked
+o
+network is open
 ```
 
 ## Lincense

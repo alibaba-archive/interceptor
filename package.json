@@ -19,6 +19,9 @@
     "type": "git",
     "url": "git://github.com/dead-horse/interceptor.git"
   },
+  "dependencies": {
+    "optimist": "0.3.5"
+  },
   "devDependencies": { 
     "mocha" : ">= 0.9.0",
     "should" : ">= 0.4.2",
