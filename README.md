@@ -1,4 +1,4 @@
-interceptor![travis-ci](https://secure.travis-ci.org/dead-horse/interceptor.png) 
+interceptor[![travis-ci](https://secure.travis-ci.org/dead-horse/interceptor.png)](https://travis-ci.org/dead-horse/interceptor)
 ===========
 
 ## 作用
