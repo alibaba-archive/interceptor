@@ -1,4 +1,12 @@
 
+0.1.4 / 2013-11-25 
+==================
+
+  * Merge pull request #5 from fengmk2/socket-error
+  * add mock socket error event
+  * Release 0.1.3
+  * update bin
+
 0.1.3 / 2013-08-21 
 ==================
 
